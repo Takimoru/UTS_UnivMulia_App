@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
 import 'about.dart';
 import 'gallery.dart';
 import 'login.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Pastikan widget Flutter sudah terinisialisasi
+  bool isLoggedIn = await checkLoginStatus(); // Periksa status login
+
   runApp(MaterialApp(
     theme: ThemeData(
       brightness: Brightness.light, // Default theme (light)
@@ -14,9 +18,13 @@ void main() {
       brightness: Brightness.dark, // Dark theme
       // other dark theme properties...
     ),
-    themeMode: ThemeMode.system, // Set to `dark` for dark mode by default
-    home: loginpage(),
+    home: isLoggedIn ? MainScreen() : LoginPage(), // Tampilkan halaman sesuai status login
   ));
+}
+
+Future<bool> checkLoginStatus() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('isLoggedIn') ?? false; // Periksa nilai isLoggedIn dari SharedPreferences
 }
 
 class MyApp extends StatelessWidget {
@@ -33,7 +41,6 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         // other dark theme properties...
       ),
-      themeMode: ThemeMode.system,
       home: MainScreen(),
     );
   }
@@ -57,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFFB71C1C),
         foregroundColor: Colors.white,
         leading: Image.asset(
           'assets/images/logo_UM.png',
@@ -91,4 +98,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-

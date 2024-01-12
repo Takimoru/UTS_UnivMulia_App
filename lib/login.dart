@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 
-class loginpage extends StatelessWidget {
-  const loginpage({Key? key}) : super(key: key);
+class LoginPage extends StatelessWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +43,15 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
+  Future<void> _saveSession() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(100.0),
+      padding: EdgeInsets.all(16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -64,22 +70,37 @@ class _LoginFormState extends State<LoginForm> {
             height: 55.0,
             width: 345.0,
             child: ElevatedButton(
-              onPressed: () {
-                // Implement your login logic here
+              onPressed: () async {
                 String username = _usernameController.text;
                 String password = _passwordController.text;
-                // Add your authentication logic here
+
                 if (username == 'MahasiswaUm' && password == 'LoginYes') {
-                  // Successful login, navigate to the next page
+                  await _saveSession();
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => MyApp()),
                   );
                 } else {
-                  // Failed login, show an error message or handle accordingly
-                  print('Login failed');
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Login Failed'),
+                        content: Text('Invalid username or password. Please try again.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 }
               },
+
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFB71C1C)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -99,5 +120,3 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 }
-
-
